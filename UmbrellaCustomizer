@@ -1,0 +1,81 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+
+public class UmbrellaCustomizer extends JFrame {
+    private JLabel umbrellaLabel;
+    private JLabel logoLabel;
+    private String selectedColor = "pink";
+
+    public UmbrellaCustomizer() {
+        setTitle("Umbrella Customizer");
+        setSize(500, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Umbrella preview
+        umbrellaLabel = new JLabel();
+        umbrellaLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        updateUmbrellaImage();
+
+        // Logo label
+        logoLabel = new JLabel();
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        logoLabel.setVisible(false); // Initially hidden
+
+        // Panel for color selection
+        JPanel colorPanel = new JPanel();
+        String[] colors = {"Pink", "Blue", "Yellow"};
+        for (String color : colors) {
+            JButton colorButton = new JButton(color);
+            colorButton.addActionListener(new ColorButtonListener());
+            colorPanel.add(colorButton);
+        }
+
+        // File chooser for logo upload
+        JButton uploadLogoButton = new JButton("Upload Logo");
+        uploadLogoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int result = fileChooser.showOpenDialog(UmbrellaCustomizer.this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    ImageIcon logoIcon = new ImageIcon(selectedFile.getAbsolutePath());
+                    logoLabel.setIcon(logoIcon);
+                    logoLabel.setVisible(true);
+                }
+            }
+        });
+
+        // Adding components to the frame
+        add(colorPanel, BorderLayout.NORTH);
+        add(umbrellaLabel, BorderLayout.CENTER);
+        add(logoLabel, BorderLayout.SOUTH);
+        add(uploadLogoButton, BorderLayout.PAGE_END);
+    }
+
+    private void updateUmbrellaImage() {
+        String imagePath = "assets/" + selectedColor + "_umbrella.png";
+        ImageIcon umbrellaIcon = new ImageIcon(imagePath);
+        umbrellaLabel.setIcon(umbrellaIcon);
+    }
+
+    private class ColorButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton source = (JButton) e.getSource();
+            selectedColor = source.getText().toLowerCase();
+            updateUmbrellaImage();
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            UmbrellaCustomizer customizer = new UmbrellaCustomizer();
+            customizer.setVisible(true);
+        });
+    }
+}
